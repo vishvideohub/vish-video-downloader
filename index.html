@@ -4,356 +4,568 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="A simple video link helper for videos you have permission to download.">
-  <title>VISH Video Downloader</title>
+  <meta name="theme-color" content="#080811">
+  <meta name="description" content="VISH Video — a modern video link helper for videos you own or are allowed to download.">
+  <title>VISH VIDEO — Dark Pro</title>
   <style>
+    :root {
+      --bg: #080811;
+      --panel: #11111f;
+      --purple: #9b6cff;
+      --cyan: #54e8ff;
+      --muted: #a5a5bd;
+      --border: rgba(255,255,255,.10);
+    }
+
     * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
 
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      color: #fff;
       min-height: 100vh;
-      background: linear-gradient(135deg, #17113f, #4625a5, #087fbd);
+      font-family: Inter, ui-sans-serif, system-ui, Arial, sans-serif;
+      color: #f7f7ff;
+      background:
+        radial-gradient(ellipse at 15% 5%, #49238b35, transparent 38%),
+        radial-gradient(ellipse at 90% 35%, #006d9030, transparent 35%),
+        var(--bg);
     }
 
-    header {
-      padding: 22px 7%;
+    a { color: inherit; }
+
+    .nav {
+      max-width: 1180px;
+      margin: auto;
+      padding: 23px 24px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid #ffffff25;
+      border-bottom: 1px solid var(--border);
     }
 
     .logo {
+      text-decoration: none;
       font-size: 23px;
-      font-weight: bold;
+      font-weight: 900;
+      letter-spacing: 1.5px;
     }
 
-    .logo span { color: #70f0ff; }
+    .logo span {
+      background: linear-gradient(90deg, var(--purple), var(--cyan));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
 
-    header a {
-      color: white;
+    .nav-link {
+      color: #d0cde2;
+      font-size: 14px;
       text-decoration: none;
     }
 
-    main {
-      width: min(760px, 90%);
-      margin: 90px auto 60px;
+    .nav-link:hover { color: var(--cyan); }
+
+    .hero {
+      width: min(850px, 91%);
+      margin: 85px auto 70px;
       text-align: center;
+      animation: appear .8s ease both;
     }
 
-    .tag {
-      display: inline-block;
-      border: 1px solid #ffffff55;
-      border-radius: 30px;
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
       padding: 9px 15px;
-      font-size: 13px;
+      border: 1px solid #a77bff45;
+      border-radius: 50px;
+      background: #8b5cf615;
+      color: #d8c8ff;
+      font-size: 12px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 12px var(--cyan);
     }
 
     h1 {
-      font-size: clamp(36px, 7vw, 60px);
-      margin: 25px 0 15px;
-      line-height: 1.1;
+      margin: 27px 0 20px;
+      font-size: clamp(42px, 8vw, 78px);
+      line-height: 1.03;
+      letter-spacing: -3px;
+      font-weight: 900;
     }
 
     h1 span {
-      color: #70f0ff;
+      background: linear-gradient(100deg, #b18aff 15%, #7e8cff 48%, #56eaff 90%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
     }
 
-    .intro {
-      color: #e1e5ff;
-      line-height: 1.7;
+    .subtitle {
+      max-width: 590px;
+      margin: 0 auto;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.8;
     }
 
-    .download-box {
-      margin-top: 35px;
-      padding: 12px;
-      border-radius: 18px;
-      background: #ffffff16;
-      border: 1px solid #ffffff35;
-      backdrop-filter: blur(10px);
+    .platforms {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 28px 0;
+    }
+
+    .platform {
+      padding: 9px 15px;
+      color: #d8d7e9;
+      background: #ffffff07;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      font-size: 13px;
+    }
+
+    .platform b {
+      color: var(--cyan);
+      margin-right: 5px;
+    }
+
+    .download-card {
+      margin-top: 30px;
+      padding: 9px;
+      border: 1px solid #a17aff65;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #171329, #101522);
+      box-shadow: 0 0 55px #8755ff15, inset 0 1px #ffffff0a;
+    }
+
+    .input-wrap {
+      display: flex;
+      gap: 8px;
+      padding: 5px;
     }
 
     input {
-      width: 100%;
-      padding: 17px;
-      border: 1px solid #ffffff50;
+      flex: 1;
+      width: 0;
+      min-width: 0;
+      padding: 17px 15px;
+      border: 1px solid transparent;
       border-radius: 12px;
-      background: #fff;
-      color: #222;
-      font-size: 15px;
       outline: none;
+      background: #080811;
+      color: white;
+      font-size: 14px;
     }
+
+    input:focus { border-color: #9b6cff80; }
+
+    input::placeholder { color: #77778f; }
 
     button {
-      width: 100%;
-      margin-top: 12px;
-      padding: 16px;
-      border: none;
+      border: 0;
       border-radius: 12px;
-      background: linear-gradient(90deg, #8c65ff, #18c9e8);
-      color: #fff;
-      font-size: 16px;
-      font-weight: bold;
+      padding: 15px 22px;
+      color: #090916;
+      background: linear-gradient(110deg, #b08aff, #5ce7ff);
+      font-weight: 800;
+      font-size: 14px;
       cursor: pointer;
+      transition: transform .2s, box-shadow .2s;
     }
 
-    button:hover { opacity: .9; }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 7px 25px #9b6cff35;
+    }
+
+    button:focus-visible, a:focus-visible, input:focus-visible {
+      outline: 2px solid var(--cyan);
+      outline-offset: 3px;
+    }
+
+    .hint {
+      margin: 12px 12px 10px;
+      color: #82829b;
+      font-size: 12px;
+      line-height: 1.6;
+    }
 
     #message {
       display: none;
-      margin: 18px 0 5px;
-      padding: 14px;
-      border-radius: 10px;
-      background: #ffffff18;
-      line-height: 1.6;
+      margin: 12px 5px 5px;
+      padding: 19px;
+      border: 1px solid #ffffff15;
+      border-radius: 13px;
+      background: #080811a8;
+      color: #e8e7f8;
+      text-align: left;
+      line-height: 1.7;
       overflow-wrap: anywhere;
     }
 
-    #message a {
-      color: #70f0ff;
+    #message strong {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--cyan);
+      font-size: 16px;
     }
 
-    .features {
+    #message p { margin: 7px 0 12px; }
+
+    #message a {
+      display: inline-block;
+      margin: 4px 12px 4px 0;
+      color: #bca0ff;
+      text-underline-offset: 4px;
+    }
+
+    .section {
+      max-width: 1050px;
+      width: 91%;
+      margin: 0 auto 75px;
+    }
+
+    .section-heading {
+      margin-bottom: 25px;
+      text-align: center;
+    }
+
+    .section-heading h2 {
+      font-size: clamp(25px, 4vw, 36px);
+      margin: 0 0 10px;
+      letter-spacing: -1px;
+    }
+
+    .section-heading p {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 15px;
-      margin-top: 50px;
-      text-align: left;
+      gap: 16px;
     }
 
     .feature {
-      padding: 20px;
-      border: 1px solid #ffffff30;
-      border-radius: 15px;
-      background: #ffffff0d;
+      padding: 25px 22px;
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      background: linear-gradient(145deg, #ffffff08, #ffffff02);
+      transition: border-color .25s, transform .25s;
     }
 
-    .feature h3 { font-size: 16px; }
-    .feature p {
-      color: #e1e5ff;
-      font-size: 14px;
-      line-height: 1.6;
+    .feature:hover {
+      transform: translateY(-4px);
+      border-color: #9b6cff70;
     }
+
+    .feature-icon {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      border: 1px solid #a77bff40;
+      border-radius: 13px;
+      background: #9b6cff15;
+      font-size: 21px;
+    }
+
+    .feature h3 { margin: 18px 0 9px; font-size: 16px; }
+
+    .feature p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .notice {
+      padding: 22px;
+      border: 1px solid #54e8ff25;
+      border-radius: 16px;
+      background: #54e8ff07;
+      color: #bfc4da;
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .notice strong { color: #70eaff; }
 
     footer {
-      padding: 25px;
+      padding: 28px 20px;
+      border-top: 1px solid var(--border);
       text-align: center;
-      color: #e1e5ff;
-      font-size: 13px;
-      border-top: 1px solid #ffffff25;
+      color: #77778f;
+      font-size: 12px;
+      line-height: 1.9;
     }
 
-    @media (max-width: 600px) {
-      header { padding: 18px 5%; }
-      main { margin-top: 55px; }
-      .features { grid-template-columns: 1fr; }
+    footer a { color: #bca0ff; }
+
+    @keyframes appear {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 650px) {
+      .nav { padding: 19px 5%; }
+      .logo { font-size: 20px; }
+      .hero { margin-top: 60px; }
+      h1 { letter-spacing: -1.8px; }
+      .subtitle { font-size: 14px; }
+      .input-wrap { flex-direction: column; }
+      input { width: 100%; padding: 17px 12px; }
+      .input-wrap button { width: 100%; }
+      .grid { grid-template-columns: 1fr; }
+      .feature { padding: 21px; }
+      .section { margin-bottom: 55px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+        scroll-behavior: auto !important;
+      }
     }
   </style>
 </head>
 <body>
-  <header>
-    <a class="logo" href="#">VISH <span>Video</span></a>
-    <a href="#about">About</a>
+  <header class="nav">
+    <a class="logo" href="#">VISH<span>.VIDEO</span></a>
+    <a class="nav-link" href="#about">About VISH ↗</a>
   </header>
 
   <main>
-    <div class="tag">✦ Simple · Fast · Creator-friendly</div>
+    <section class="hero">
+      <div class="pill"><span class="dot"></span> Your video link assistant</div>
 
-    <h1>Download Videos<br><span>Made Simple.</span></h1>
+      <h1>Your Videos.<br><span>Your Way.</span></h1>
 
-    <p class="intro">
-      A simple tool to help you access video files
-      that you own or have permission to download.
-    </p>
+      <p class="subtitle">
+        A smarter, cleaner way to manage video links.
+        Paste a link to identify its platform and find the official
+        options available for viewing or saving the video.
+      </p>
 
-    <div class="download-box">
-      <form id="videoForm">
-        <input
-          id="videoUrl"
-          type="url"
-          placeholder="Paste a direct video file link..."
-          aria-label="Video file URL"
-          required
-        >
-        <button type="submit">Check Video Link ↗</button>
-      </form>
-      <div id="message" role="status" aria-live="polite"></div>
-    </div>
-
-    <div class="features">
-      <div class="feature">
-        <h3>⚡ Simple to Use</h3>
-        <p>Paste a video file link and check it in seconds.</p>
+      <div class="platforms" aria-label="Supported platforms">
+        <span class="platform"><b>▶</b> YouTube</span>
+        <span class="platform"><b>f</b> Facebook</span>
+        <span class="platform"><b>♪</b> TikTok</span>
       </div>
-      <div class="feature">
-        <h3>📱 Mobile Friendly</h3>
-        <p>Designed for phones, tablets, and computers.</p>
-      </div>
-      <div class="feature">
-        <h3>🔒 Privacy Minded</h3>
-        <p>Your pasted link is not sent to a VISH server by this demo.</p>
-      </div>
-    </div>
 
-    <p id="about" class="intro" style="margin-top:35px;font-size:13px">
-      Only download content you own or have permission to save.
-      This starter version cannot extract videos from social media pages.
-    </p>
+      <div class="download-card">
+        <form id="videoForm">
+          <div class="input-wrap">
+            <input
+              id="videoUrl"
+              type="url"
+              placeholder="Paste your video link here..."
+              aria-label="Video URL"
+              autocomplete="url"
+              required
+            >
+            <button type="submit">Check Link ↗</button>
+          </div>
+        </form>
+        <p class="hint">
+          Supports platform recognition and official saving guidance.
+          No account login required.
+        </p>
+        <div id="message" role="status" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-heading">
+        <h2>Built for a better experience.</h2>
+        <p>Simple tools. Clear guidance. A design that feels premium.</p>
+      </div>
+
+      <div class="grid">
+        <article class="feature">
+          <div class="feature-icon">✦</div>
+          <h3>Simple & Fast</h3>
+          <p>Paste a link and identify the platform without unnecessary steps.</p>
+        </article>
+
+        <article class="feature">
+          <div class="feature-icon">◈</div>
+          <h3>Works Across Devices</h3>
+          <p>A responsive interface designed for mobile phones, tablets and desktops.</p>
+        </article>
+
+        <article class="feature">
+          <div class="feature-icon">⌑</div>
+          <h3>Privacy Minded</h3>
+          <p>This static demo checks the link in your browser and does not send it to a VISH server.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="about">
+      <div class="section-heading">
+        <h2>How VISH works</h2>
+        <p>Identify your link and find the appropriate official option.</p>
+      </div>
+
+      <div class="notice">
+        <strong>Creator-friendly by design.</strong><br>
+        Video saving depends on the platform, the creator's settings
+        and your permissions. VISH does not bypass access controls or
+        extract media from social media pages. Availability of official
+        download options varies by video and account.
+      </div>
+    </section>
   </main>
 
   <footer>
-    © <span id="year"></span> VISH Video Downloader
-    · Respect creators and copyright.
+    © <span id="year"></span> VISH VIDEO · Made for a cleaner video experience.<br>
+    <a href="https://support.google.com/youtube/" target="_blank" rel="noopener noreferrer">YouTube Help</a>
+    · <a href="https://www.facebook.com/help/" target="_blank" rel="noopener noreferrer">Facebook Help</a>
+    · <a href="https://support.tiktok.com/" target="_blank" rel="noopener noreferrer">TikTok Help</a>
   </footer>
 
+  <script>
+    const form = document.getElementById("videoForm");
+    const input = document.getElementById("videoUrl");
+    const message = document.getElementById("message");
 
+    document.getElementById("year").textContent =
+      new Date().getFullYear();
 
-<script>
-  const form = document.getElementById("videoForm");
-  const input = document.getElementById("videoUrl");
-  const message = document.getElementById("message");
-
-  document.getElementById("year").textContent =
-    new Date().getFullYear();
-
-  const platforms = {
-    youtube: {
-      name: "YouTube",
-      hosts: ["youtube.com", "youtu.be", "youtube-nocookie.com"],
-      info: "Use YouTube's official download feature where available, or download your own uploaded video.",
-      help: "https://support.google.com/youtube/answer/11977233"
-    },
-    facebook: {
-      name: "Facebook",
-      hosts: ["facebook.com", "fb.watch"],
-      info: "Use Facebook's built-in video options or download your own content when available.",
-      help: "https://www.facebook.com/help/"
-    },
-    tiktok: {
-      name: "TikTok",
-      hosts: ["tiktok.com"],
-      info: "Open the video in TikTok and select Share → Save video if the creator allows it.",
-      help: "https://support.tiktok.com/en/"
-    }
-  };
-
-  function addLink(parent, url, label) {
-    const link = document.createElement("a");
-    link.href = url;
-    link.target = "_blank";
-    link.rel = "noopener noreferrer";
-    link.textContent = label;
-    parent.appendChild(link);
-  }
-
-  function showMessage(title, description, helpUrl) {
-    message.replaceChildren();
-
-    const heading = document.createElement("strong");
-    heading.textContent = title;
-    message.appendChild(heading);
-
-    const paragraph = document.createElement("p");
-    paragraph.textContent = description;
-    message.appendChild(paragraph);
-
-    if (helpUrl) {
-      addLink(message, helpUrl, "Open official help ↗");
-    }
-
-    message.style.display = "block";
-  }
-
-  form.addEventListener("submit", function(event) {
-    event.preventDefault();
-
-    let url;
-
-    try {
-      url = new URL(input.value.trim());
-    } catch {
-      showMessage(
-        "Invalid link",
-        "Please enter a valid video URL.",
-        null
-      );
-      return;
-    }
-
-    if (url.protocol !== "https:" && url.protocol !== "http:") {
-      showMessage(
-        "Invalid link",
-        "Please use an HTTP or HTTPS URL.",
-        null
-      );
-      return;
-    }
-
-    const host = url.hostname.toLowerCase().replace(/^www\./, "");
-
-    if (
-      host === "youtube.com" ||
-      host.endsWith(".youtube.com") ||
-      host === "youtu.be" ||
-      host === "youtube-nocookie.com" ||
-      host.endsWith(".youtube-nocookie.com")
-    ) {
-      showMessage(
-        "YouTube link detected ✓",
-        platforms.youtube.info,
-        platforms.youtube.help
-      );
-      return;
-    }
-
-    if (
-      host === "facebook.com" ||
-      host.endsWith(".facebook.com") ||
-      host === "fb.watch"
-    ) {
-      showMessage(
-        "Facebook link detected ✓",
-        platforms.facebook.info,
-        platforms.facebook.help
-      );
-      return;
-    }
-
-    if (
-      host === "tiktok.com" ||
-      host.endsWith(".tiktok.com")
-    ) {
-      showMessage(
-        "TikTok link detected ✓",
-        platforms.tiktok.info,
-        platforms.tiktok.help
-      );
-      return;
-    }
-
-    if (/\.(mp4|webm|mov|m4v|ogv)$/i.test(url.pathname)) {
+    function showMessage(title, description, links = []) {
       message.replaceChildren();
 
-      const text = document.createElement("p");
-      text.textContent =
-        "Direct video link detected. If you have permission to save it, open the video below.";
-      message.appendChild(text);
+      const heading = document.createElement("strong");
+      heading.textContent = title;
+      message.appendChild(heading);
 
-      addLink(message, url.href, "Open video ↗");
+      const paragraph = document.createElement("p");
+      paragraph.textContent = description;
+      message.appendChild(paragraph);
+
+      links.forEach(item => {
+        const link = document.createElement("a");
+        link.href = item.url;
+        link.textContent = item.label;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        message.appendChild(link);
+      });
+
       message.style.display = "block";
-      return;
     }
 
-    showMessage(
-      "Link received",
-      "This link is not from a recognised video platform. Check the URL or use a direct video file link you are allowed to download.",
-      null
-    );
-  });
-</script>
+    function isHost(host, domain) {
+      return host === domain || host.endsWith("." + domain);
+    }
 
+    form.addEventListener("submit", function(event) {
+      event.preventDefault();
 
+      let url;
+
+      try {
+        url = new URL(input.value.trim());
+      } catch {
+        showMessage(
+          "Invalid link",
+          "Please paste a complete, valid video URL."
+        );
+        return;
+      }
+
+      if (url.protocol !== "https:" && url.protocol !== "http:") {
+        showMessage(
+          "Invalid link",
+          "Please use an HTTP or HTTPS URL."
+        );
+        return;
+      }
+
+      const host = url.hostname.toLowerCase().replace(/^www\./, "");
+
+      if (
+        isHost(host, "youtube.com") ||
+        isHost(host, "youtube-nocookie.com") ||
+        host === "youtu.be"
+      ) {
+        showMessage(
+          "YouTube link detected ✓",
+          "Use YouTube's official download feature when available. To download your own uploaded video, open YouTube Studio.",
+          [
+            {
+              label: "Open YouTube Studio ↗",
+              url: "https://studio.youtube.com/"
+            },
+            {
+              label: "YouTube download help ↗",
+              url: "https://support.google.com/youtube/answer/11977233"
+            }
+          ]
+        );
+        return;
+      }
+
+      if (
+        isHost(host, "facebook.com") ||
+        host === "fb.watch"
+      ) {
+        showMessage(
+          "Facebook link detected ✓",
+          "Open the video on Facebook and check its available options. Saving and downloading depend on the content and account settings.",
+          [
+            {
+              label: "Facebook Help Center ↗",
+              url: "https://www.facebook.com/help/"
+            }
+          ]
+        );
+        return;
+      }
+
+      if (isHost(host, "tiktok.com")) {
+        showMessage(
+          "TikTok link detected ✓",
+          "Open the video in TikTok, tap Share, and select Save video if the creator has enabled that option.",
+          [
+            {
+              label: "TikTok Help Center ↗",
+              url: "https://support.tiktok.com/"
+            }
+          ]
+        );
+        return;
+      }
+
+      if (/\.(mp4|webm|mov|m4v|ogv)$/i.test(url.pathname)) {
+        showMessage(
+          "Direct video link detected ✓",
+          "If you own this video or have permission to save it, open the file below. The remote server may restrict access.",
+          [{ label: "Open video ↗", url: url.href }]
+        );
+        return;
+      }
+
+      showMessage(
+        "Link not recognised",
+        "Check the URL or paste a link from YouTube, Facebook or TikTok."
+      );
+    });
+  </script>
 </body>
 </html>
