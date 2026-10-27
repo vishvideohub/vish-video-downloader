@@ -1,0 +1,265 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A simple video link helper for videos you have permission to download.">
+  <title>VISH Video Downloader</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      color: #fff;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #17113f, #4625a5, #087fbd);
+    }
+
+    header {
+      padding: 22px 7%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #ffffff25;
+    }
+
+    .logo {
+      font-size: 23px;
+      font-weight: bold;
+    }
+
+    .logo span { color: #70f0ff; }
+
+    header a {
+      color: white;
+      text-decoration: none;
+    }
+
+    main {
+      width: min(760px, 90%);
+      margin: 90px auto 60px;
+      text-align: center;
+    }
+
+    .tag {
+      display: inline-block;
+      border: 1px solid #ffffff55;
+      border-radius: 30px;
+      padding: 9px 15px;
+      font-size: 13px;
+    }
+
+    h1 {
+      font-size: clamp(36px, 7vw, 60px);
+      margin: 25px 0 15px;
+      line-height: 1.1;
+    }
+
+    h1 span {
+      color: #70f0ff;
+    }
+
+    .intro {
+      color: #e1e5ff;
+      line-height: 1.7;
+    }
+
+    .download-box {
+      margin-top: 35px;
+      padding: 12px;
+      border-radius: 18px;
+      background: #ffffff16;
+      border: 1px solid #ffffff35;
+      backdrop-filter: blur(10px);
+    }
+
+    input {
+      width: 100%;
+      padding: 17px;
+      border: 1px solid #ffffff50;
+      border-radius: 12px;
+      background: #fff;
+      color: #222;
+      font-size: 15px;
+      outline: none;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 12px;
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(90deg, #8c65ff, #18c9e8);
+      color: #fff;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover { opacity: .9; }
+
+    #message {
+      display: none;
+      margin: 18px 0 5px;
+      padding: 14px;
+      border-radius: 10px;
+      background: #ffffff18;
+      line-height: 1.6;
+      overflow-wrap: anywhere;
+    }
+
+    #message a {
+      color: #70f0ff;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-top: 50px;
+      text-align: left;
+    }
+
+    .feature {
+      padding: 20px;
+      border: 1px solid #ffffff30;
+      border-radius: 15px;
+      background: #ffffff0d;
+    }
+
+    .feature h3 { font-size: 16px; }
+    .feature p {
+      color: #e1e5ff;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    footer {
+      padding: 25px;
+      text-align: center;
+      color: #e1e5ff;
+      font-size: 13px;
+      border-top: 1px solid #ffffff25;
+    }
+
+    @media (max-width: 600px) {
+      header { padding: 18px 5%; }
+      main { margin-top: 55px; }
+      .features { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="logo" href="#">VISH <span>Video</span></a>
+    <a href="#about">About</a>
+  </header>
+
+  <main>
+    <div class="tag">✦ Simple · Fast · Creator-friendly</div>
+
+    <h1>Download Videos<br><span>Made Simple.</span></h1>
+
+    <p class="intro">
+      A simple tool to help you access video files
+      that you own or have permission to download.
+    </p>
+
+    <div class="download-box">
+      <form id="videoForm">
+        <input
+          id="videoUrl"
+          type="url"
+          placeholder="Paste a direct video file link..."
+          aria-label="Video file URL"
+          required
+        >
+        <button type="submit">Check Video Link ↗</button>
+      </form>
+      <div id="message" role="status" aria-live="polite"></div>
+    </div>
+
+    <div class="features">
+      <div class="feature">
+        <h3>⚡ Simple to Use</h3>
+        <p>Paste a video file link and check it in seconds.</p>
+      </div>
+      <div class="feature">
+        <h3>📱 Mobile Friendly</h3>
+        <p>Designed for phones, tablets, and computers.</p>
+      </div>
+      <div class="feature">
+        <h3>🔒 Privacy Minded</h3>
+        <p>Your pasted link is not sent to a VISH server by this demo.</p>
+      </div>
+    </div>
+
+    <p id="about" class="intro" style="margin-top:35px;font-size:13px">
+      Only download content you own or have permission to save.
+      This starter version cannot extract videos from social media pages.
+    </p>
+  </main>
+
+  <footer>
+    © <span id="year"></span> VISH Video Downloader
+    · Respect creators and copyright.
+  </footer>
+
+  <script>
+    const form = document.getElementById("videoForm");
+    const input = document.getElementById("videoUrl");
+    const message = document.getElementById("message");
+
+    document.getElementById("year").textContent =
+      new Date().getFullYear();
+
+    form.addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      let url;
+
+      try {
+        url = new URL(input.value.trim());
+      } catch {
+        message.style.display = "block";
+        message.textContent = "Please enter a valid video URL.";
+        return;
+      }
+
+      if (!["https:", "http:"].includes(url.protocol)) {
+        message.style.display = "block";
+        message.textContent = "Please use a valid HTTP or HTTPS link.";
+        return;
+      }
+
+      if (!/\.(mp4|webm|mov|m4v|ogv)$/i.test(url.pathname)) {
+        message.style.display = "block";
+        message.textContent =
+          "This looks like a webpage, not a direct video file. " +
+          "This demo cannot extract videos from YouTube, Instagram, " +
+          "TikTok or Facebook. Use the platform's official download " +
+          "feature or a direct video link you have permission to save.";
+        return;
+      }
+
+      message.style.display = "block";
+      message.textContent = "";
+
+      const text = document.createElement("p");
+      text.textContent =
+        "Direct video link detected. The remote server may still restrict downloading.";
+      message.appendChild(text);
+
+      const link = document.createElement("a");
+      link.href = url.href;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = "Open video in a new tab ↗";
+      message.appendChild(link);
+    });
+  </script>
+</body>
+</html>
