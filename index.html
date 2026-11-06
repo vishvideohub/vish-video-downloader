@@ -456,18 +456,32 @@ processBtn.addEventListener("click",async()=>{
   return;
  }
 
- const platform=identifyPlatform(url);
+ const platform = identifyPlatform(url);
+
+const isDirectVideo = /\.(mp4|webm|mov|m4v|mkv)$/i.test(parsed.pathname);
+
+const detectedPlatform = platform || (
+  isDirectVideo ? "Direct video" : null
+);
+
+if (!detectedPlatform) {
+  showMessage(
+    "Please use a supported HTTPS direct video file link.",
+    "error"
+  );
+  return;
+}
 
  if(!platform){
   showMessage("Please use a supported HTTPS direct video file link.","error");
   return;
  }
 
- addHistory(url,platform);
+ addHistory(url,detectedPlatform);
  processBtn.disabled=true;
  processBtn.querySelector("span").textContent="Connecting…";
 
- showMessage("Link recognised as "+platform+". Contacting the download service…","info");
+ showMessage("Link recognised as "+detectedPlatform+". Contacting the download service…","info");
 
  try{
   const response=await fetch(API_ENDPOINT,{
