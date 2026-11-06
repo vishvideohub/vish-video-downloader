@@ -504,15 +504,182 @@ if (!detectedPlatform) {
    throw new Error("The service response is missing a download link.");
   }
 
-  const link=document.createElement("a");
-  link.href=data.downloadUrl;
-  link.target="_blank";
-  link.rel="noopener noreferrer";
-  link.textContent="Open your prepared file";
+  
+if (!data || typeof data.downloadUrl !== "string") {
+  throw new Error("The service response is missing a download link.");
+}
 
-  message.className="result-message show success";
-  message.textContent="Your service prepared a file. ";
-  message.append(link);
+if (typeof data.previewUrl !== "string") {
+  throw new Error("Preview URL is missing. Check your Worker deployment.");
+}
+
+message.className = "result-message show success";
+message.replaceChildren();
+
+const heading = document.createElement("p");
+heading.textContent = "Your video is ready! Preview it below or download it.";
+heading.style.fontWeight = "700";
+
+const video = document.createElement("video");
+video.controls = true;
+video.playsInline = true;
+video.preload = "metadata";
+video.crossOrigin = "anonymous";
+video.src = data.previewUrl;
+
+video.style.width = "100%";
+video.style.maxWidth = "640px";
+video.style.display = "block";
+video.style.margin = "15px auto";
+video.style.borderRadius = "14px";
+video.style.background = "#050914";
+
+const progressTrack = document.createElement("div");
+progressTrack.style.width = "100%";
+progressTrack.style.height = "9px";
+progressTrack.style.background = "rgba(120,150,200,.18)";
+progressTrack.style.borderRadius = "20px";
+progressTrack.style.overflow = "hidden";
+progressTrack.style.marginTop = "14px";
+
+const progressFill = document.createElement("div");
+progressFill.style.width = "0%";
+progressFill.style.height = "100%";
+progressFill.style.background = "linear-gradient(90deg,#40e7f4,#a66bff)";
+progressFill.style.transition = "width .15s";
+progressTrack.append(progressFill);
+
+const status = document.createElement("p");
+status.textContent = "Preview ready. Waiting for download.";
+status.style.fontSize = "12px";
+
+const downloadButton = document.createElement("button");
+downloadButton.type = "button";
+downloadButton.textContent = "⬇ Download Video";
+
+downloadButton.style.padding = "13px 22px";
+downloadButton.style.border = "0";
+downloadButton.style.borderRadius = "11px";
+downloadButton.style.background = "linear-gradient(100deg,#40e7f4,#a66bff)";
+downloadButton.style.color = "#07121b";
+downloadButton.style.fontWeight = "800";
+downloadButton.style.cursor = "pointer";
+downloadButton.style.marginTop = "10px";
+
+downloadButton.addEventListener("click", async () => {
+  downloadButton.disabled = true;
+  downloadButton.textContent = "Downloading...";
+
+  progressFill.style.width = "0%";
+
+  try {
+    const response = await fetch(data.downloadUrl);
+
+    if (!response.ok) {
+      throw new Error("Download failed: HTTP " + response.status);
+    }
+
+    const total = Number(
+      response.headers.get("Content-Length") || 0
+    );
+
+    const maxMemory = 100 * 1024 * 1024;
+
+    function openDirectDownload() {
+      const a = document.createElement("a");
+      a.href = data.downloadUrl;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.click();
+    }
+
+    if (total > maxMemory || !response.body?.getReader) {
+      openDirectDownload();
+      status.textContent =
+        "Large file: browser download has been started.";
+      return;
+    }
+
+    const reader = response.body.getReader();
+    const chunks = [];
+    let received = 0;
+
+    while (true) {
+      const { done, value } = await reader.read();
+
+      if (done) break;
+
+      received += value.byteLength;
+
+      if (received > maxMemory) {
+        await reader.cancel();
+        openDirectDownload();
+        status.textContent =
+          "Large file: continuing through browser download.";
+        return;
+      }
+
+      chunks.push(value);
+
+      if (total > 0) {
+        const percent = Math.min(
+          100,
+          Math.round((received / total) * 100)
+        );
+
+        progressFill.style.width = percent + "%";
+        status.textContent =
+          "Downloading... " + percent + "%";
+      } else {
+        status.textContent =
+          "Downloaded " + (received / 1048576).toFixed(2) + " MB";
+      }
+    }
+
+    progressFill.style.width = "100%";
+
+    const blob = new Blob(chunks, {
+      type: response.headers.get("Content-Type") || "video/mp4"
+    });
+
+    const objectUrl = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+
+    let filename = "vish-video.mp4";
+
+    try {
+      filename = new URL(url).pathname.split("/").pop() || filename;
+    } catch {}
+
+    a.href = objectUrl;
+    a.download = filename;
+
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    setTimeout(() => URL.revokeObjectURL(objectUrl), 60000);
+
+    status.textContent =
+      "✓ Download complete! " +
+      (received / 1048576).toFixed(2) + " MB";
+
+  } catch (error) {
+    status.textContent = "Download error: " + error.message;
+  } finally {
+    downloadButton.disabled = false;
+    downloadButton.textContent = "⬇ Download Video";
+  }
+});
+
+message.append(
+  heading,
+  video,
+  progressTrack,
+  status,
+  downloadButton
+);
+
 
  }catch(error){
   showMessage(error.message||"Could not connect to the download service.","info");
