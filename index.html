@@ -308,15 +308,45 @@ function hideMessage(){
  message.className = "result-message";
  message.textContent = "";
 }
-function identifyPlatform(rawUrl){
- try{
-  const host = new URL(rawUrl).hostname.toLowerCase().replace(/^www\./,"");
-  if(host==="youtube.com"||host==="youtu.be"||host.endsWith(".youtube.com"))return "YouTube";
-  if(host==="facebook.com"||host==="fb.watch"||host.endsWith(".facebook.com"))return "Facebook";
-  if(host==="tiktok.com"||host.endsWith(".tiktok.com"))return "TikTok";
- }catch(e){}
- return null;
+
+function identifyPlatform(rawUrl) {
+  try {
+    const parsed = new URL(rawUrl);
+    const host = parsed.hostname.toLowerCase().replace(/^www\./, "");
+
+    if (
+      host === "youtube.com" ||
+      host === "youtu.be" ||
+      host.endsWith(".youtube.com")
+    ) return "YouTube";
+
+    if (
+      host === "facebook.com" ||
+      host.endsWith(".facebook.com") ||
+      host === "fb.watch"
+    ) return "Facebook";
+
+    if (
+      host === "tiktok.com" ||
+      host.endsWith(".tiktok.com")
+    ) return "TikTok";
+
+    const extension = /\.(mp4|webm|mov|m4v|mkv)$/i;
+
+    if (
+      parsed.protocol === "https:" &&
+      extension.test(parsed.pathname)
+    ) {
+      return "Direct video";
+    }
+
+  } catch (error) {
+    return null;
+  }
+
+  return null;
 }
+
 function readHistory(){
  try{
   const data=JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]");
@@ -429,7 +459,7 @@ processBtn.addEventListener("click",async()=>{
  const platform=identifyPlatform(url);
 
  if(!platform){
-  showMessage("Please use a YouTube, Facebook, or TikTok link.","error");
+  showMessage("Please use a supported HTTPS direct video file link.","error");
   return;
  }
 
